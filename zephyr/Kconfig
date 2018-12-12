@@ -1,0 +1,19 @@
+if BOOTLOADER_MCUBOOT
+
+config MCUBOOT_CMAKELISTS_DIR
+	string "Path to the directory of the MCUBoot CMakeLists.txt file"
+	default "$MCUBOOT_BASE/boot/zephyr/"
+
+endif # BOOTLOADER_MCUBOOT
+
+if MCUBOOT || BOOTLOADER_MCUBOOT
+# TODO: Support sharing Kconfig configuration between images
+config BOOT_SIGNATURE_KEY_FILE
+	string "PEM key file"
+	default "root-rsa-2048.pem"
+	help
+	  The key file will be parsed by imgtool's getpub command and a .c source
+	  with the public key information will be written in a format expected by
+	  MCUboot.
+
+endif # MCUBOOT || BOOTLOADER_MCUBOOT
