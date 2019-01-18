@@ -147,6 +147,14 @@ if(NOT CONFIG_BOOT_SIGNATURE_KEY_FILE STREQUAL "")
   else()
     set(KEY_FILE ${MCUBOOT_DIR}/${CONFIG_BOOT_SIGNATURE_KEY_FILE})
   endif()
+
+  set_property(
+	GLOBAL
+	PROPERTY
+	KEY_FILE
+	${KEY_FILE}
+	)
+
   set(GENERATED_PUBKEY ${ZEPHYR_BINARY_DIR}/autogen-pubkey.c)
   add_custom_command(
     OUTPUT ${GENERATED_PUBKEY}
@@ -161,3 +169,13 @@ if(NOT CONFIG_BOOT_SIGNATURE_KEY_FILE STREQUAL "")
     )
   target_sources(${IMAGE}app PRIVATE "${GENERATED_PUBKEY}")
 endif()
+
+# TODO: Configurable?
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE
+  ${PROJECT_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
+  )
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE_TARGET
+  ${logical_target_for_zephyr_elf}
+  )
