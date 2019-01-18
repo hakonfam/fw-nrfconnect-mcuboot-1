@@ -12,6 +12,7 @@ config MCUBOOT
 	default y
 	bool
 
+
 config BOOT_USE_MBEDTLS
 	bool
 	# Hidden option
@@ -27,6 +28,15 @@ config BOOT_USE_TINYCRYPT
 	  Use TinyCrypt for crypto primitives.
 
 menu "MCUBoot settings"
+
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
+	hex "Flash space reserved for bootloader."
+	default 0x8000
+	help
+	  Flash space set aside for the MCUBoot. Note, the name
+	  of this configuration needs to match the requirements set by the
+	  script 'partition_manager.py'. See pm.yaml.
+
 
 choice
 	prompt "Signature type"
