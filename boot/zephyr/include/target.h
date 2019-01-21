@@ -30,21 +30,11 @@
 #endif
 #endif /* !defined(MCUBOOT_TARGET_CONFIG) */
 
-
-#ifdef CONFIG_MCUBOOT_IMAGE_0_OFFSET
-#define FLASH_AREA_IMAGE_0_OFFSET CONFIG_MCUBOOT_IMAGE_0_OFFSET
-#define FLASH_AREA_IMAGE_0_SIZE CONFIG_MCUBOOT_IMAGE_1_OFFSET - CONFIG_MCUBOOT_IMAGE_0_OFFSET
-#define FLASH_AREA_IMAGE_1_OFFSET CONFIG_MCUBOOT_IMAGE_1_OFFSET
-#define FLASH_AREA_IMAGE_1_SIZE CONFIG_MCUBOOT_SCRATCH_OFFSET - CONFIG_MCUBOOT_IMAGE_1_OFFSET
-#endif /* CONFIG_MCUBOOT_IMAGE_0_OFFSET */
 /*
  * Sanity check the target support.
  */
 #if !defined(DT_FLASH_DEV_NAME) || \
-    !defined(FLASH_ALIGN) ||                  \
-    !defined(CONFIG_MCUBOOT_IMAGE_0_OFFSET) || \
-    !defined(CONFIG_MCUBOOT_IMAGE_1_OFFSET) || \
-    !defined(CONFIG_MCUBOOT_SCRATCH_OFFSET)
+    !defined(FLASH_ALIGN)
 #error "Target support is incomplete; cannot build mcuboot."
 #endif
 

@@ -29,22 +29,13 @@ config BOOT_USE_TINYCRYPT
 
 menu "MCUBoot settings"
 
-config MCUBOOT_IMAGE_0_OFFSET
-	hex "Offset of image 0"
-	default 0xc000
+config MCUBOOT_SCRATCH_SIZE
+	hex "Scratch area size"
+	default 0x1e000
 
-config MCUBOOT_IMAGE_1_OFFSET
+config MCUBOOT_STORAGE_SIZE
 	hex "Offset of image 1"
-	default 0x18000
-
-config MCUBOOT_SCRATCH_OFFSET
-	hex "Offset of scratch area"
-	default 0x24000
-
-config MCUBOOT_STORAGE_OFFSET
-	hex "Offset of storage area"
-	default 0x28000
-
+	default 0x4000
 
 config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
 	hex "Flash space reserved for bootloader."
