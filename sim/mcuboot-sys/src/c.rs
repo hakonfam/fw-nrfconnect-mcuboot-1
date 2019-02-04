@@ -1,9 +1,10 @@
 /// Interface wrappers to C API entering to the bootloader
 
-use area::AreaDesc;
+use crate::area::AreaDesc;
 use simflash::SimFlashMap;
+use lazy_static::lazy_static;
 use libc;
-use api;
+use crate::api;
 use std::sync::Mutex;
 
 lazy_static! {
@@ -51,17 +52,6 @@ pub fn boot_max_align() -> usize {
     unsafe { raw::BOOT_MAX_ALIGN as usize }
 }
 
-pub fn ecdsa256_sign(privkey: &[u8], hash: &[u8]) -> Result<[u8; 64], &'static str> {
-    unsafe {
-        let mut signature: [u8; 64] = [0; 64];
-        if raw::ecdsa256_sign_(privkey.as_ptr(), hash.as_ptr(),
-                               hash.len() as u32, signature.as_mut_ptr()) == 1 {
-            return Ok(signature);
-        }
-        return Err("Failed signature generation");
-    }
-}
-
 pub fn rsa_oaep_encrypt(pubkey: &[u8], seckey: &[u8]) -> Result<[u8; 256], &'static str> {
     unsafe {
         let mut encbuf: [u8; 256] = [0; 256];
@@ -85,7 +75,7 @@ pub fn kw_encrypt(kek: &[u8], seckey: &[u8]) -> Result<[u8; 24], &'static str> {
 }
 
 mod raw {
-    use area::CAreaDesc;
+    use crate::area::CAreaDesc;
     use libc;
 
     extern "C" {
@@ -101,10 +91,6 @@ mod raw {
 
         pub static BOOT_MAGIC_SZ: u32;
         pub static BOOT_MAX_ALIGN: u32;
-
-        pub fn ecdsa256_sign_(privkey: *const u8, hash: *const u8,
-                              hash_len: libc::c_uint,
-                              signature: *mut u8) -> libc::c_int;
 
         pub fn rsa_oaep_encrypt_(pubkey: *const u8, pubkey_len: libc::c_uint,
                                  seckey: *const u8, seckey_len: libc::c_uint,

@@ -31,7 +31,7 @@
 #include <misc/byteorder.h>
 #include <misc/__assert.h>
 #include <flash.h>
-#include <crc16.h>
+#include <crc.h>
 #include <base64.h>
 #include <cbor.h>
 #else
@@ -59,6 +59,8 @@
 #include "bootutil_priv.h"
 #endif
 
+MCUBOOT_LOG_MODULE_DECLARE(mcuboot);
+
 #define BOOT_SERIAL_INPUT_MAX   512
 #define BOOT_SERIAL_OUT_MAX	80
 
@@ -71,8 +73,8 @@
 
 #define ntohs(x) sys_be16_to_cpu(x)
 #define htons(x) sys_cpu_to_be16(x)
-
 #endif
+
 static char in_buf[BOOT_SERIAL_INPUT_MAX + 1];
 static char dec_buf[BOOT_SERIAL_INPUT_MAX + 1];
 const struct boot_uart_funcs *boot_uf;
@@ -563,6 +565,7 @@ boot_serial_in_dec(char *in, int inlen, char *out, int *out_off, int maxout)
     int rc;
     uint16_t crc;
     uint16_t len;
+
 #ifdef __ZEPHYR__
     int err;
     err = base64_decode( &out[*out_off], maxout - *out_off, &rc, in, inlen - 2);
@@ -582,7 +585,9 @@ boot_serial_in_dec(char *in, int inlen, char *out, int *out_off, int maxout)
 
     if (*out_off > sizeof(uint16_t)) {
         len = ntohs(*(uint16_t *)out);
-
+        if (len != *out_off - sizeof(uint16_t)) {
+            return 0;
+        }
         len = min(len, *out_off - sizeof(uint16_t));
         out += sizeof(uint16_t);
 #ifdef __ZEPHYR__

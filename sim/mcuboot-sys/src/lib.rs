@@ -1,8 +1,3 @@
-#[macro_use] extern crate lazy_static;
-extern crate libc;
-#[macro_use] extern crate log;
-extern crate simflash;
-
 mod area;
 pub mod c;
 
@@ -10,4 +5,4 @@ pub mod c;
 // functions are exported to C code.
 pub mod api;
 
-pub use area::{AreaDesc, FlashId};
+pub use crate::area::{AreaDesc, FlashId};

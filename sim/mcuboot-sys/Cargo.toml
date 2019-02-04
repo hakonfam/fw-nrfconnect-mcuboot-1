@@ -5,6 +5,7 @@ authors = ["David Brown <david.brown@linaro.org>"]
 description = "A simple wrapper around the mcuboot code."
 build = "build.rs"
 publish = false
+edition = "2018"
 
 [features]
 # By default, build with simplistic signature verification.
@@ -29,13 +30,16 @@ enc-rsa = []
 # Encrypt image in slot1 using AES-KW-128
 enc-kw = []
 
+# Allow bootstrapping an empty/invalid slot0 from a valid slot1
+bootstrap = []
+
 [build-dependencies]
 cc = "1.0.25"
 
 [dependencies]
-lazy_static = "1.0"
+lazy_static = "1.2"
 libc = "0.2.0"
-log = "0.3"
+log = "0.4"
 simflash = { path = "../simflash" }
 
 # Optimize some, even when building for debugging, otherwise the tests

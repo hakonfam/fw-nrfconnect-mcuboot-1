@@ -24,20 +24,9 @@ extern "C" {
 #endif
 
 #include <mcuboot_config/mcuboot_config.h>
+#include <mcuboot_config/mcuboot_logging.h>
 
 #ifdef MCUBOOT_HAVE_LOGGING
-
-#ifdef BOOT_LOG_LEVEL
-#define MCUBOOT_LOG_LEVEL BOOT_LOG_LEVEL
-#endif
-
-#define BOOT_LOG_LEVEL_OFF     MCUBOOT_LOG_LEVEL_OFF
-#define BOOT_LOG_LEVEL_ERROR   MCUBOOT_LOG_LEVEL_ERROR
-#define BOOT_LOG_LEVEL_WARNING MCUBOOT_LOG_LEVEL_WARNING
-#define BOOT_LOG_LEVEL_INFO    MCUBOOT_LOG_LEVEL_INFO
-#define BOOT_LOG_LEVEL_DEBUG   MCUBOOT_LOG_LEVEL_DEBUG
-
-#include <mcuboot_config/mcuboot_logging.h>
 
 #define BOOT_LOG_ERR(...) MCUBOOT_LOG_ERR(__VA_ARGS__)
 #define BOOT_LOG_WRN(...) MCUBOOT_LOG_WRN(__VA_ARGS__)
