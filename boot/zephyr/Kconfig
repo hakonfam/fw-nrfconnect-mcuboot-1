@@ -56,7 +56,7 @@ config MCUBOOT_STORAGE_SIZE
 
 config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
 	hex "Flash space reserved for bootloader."
-	default 0x8000
+	default 0xc000
 	help
 	  Flash space set aside for the MCUBoot. Note, the name
 	  of this configuration needs to match the requirements set by the
