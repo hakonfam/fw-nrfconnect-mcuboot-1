@@ -63,6 +63,17 @@ config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
 	  script 'partition_manager.py'. See pm.yaml.
 
 
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT_SCRATCH
+	hex "Flash space reserved for scratch."
+	default 0x1e000
+	help
+	  Flash space set aside for the scratch area.
+
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT_STORAGE
+	hex "Flash space reserved for scratch."
+	default 0x4000
+	help
+	  Flash space set aside for the scratch area.
 choice
 	prompt "Signature type"
 	default BOOT_SIGNATURE_TYPE_RSA
