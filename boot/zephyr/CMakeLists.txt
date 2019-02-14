@@ -209,13 +209,3 @@ if (NOT CONFIG_SECURE_BOOT)
     ${logical_target_for_zephyr_elf}
     )
 endif()
-
-# TODO: Configurable?
-set_property(GLOBAL APPEND PROPERTY
-  HEX_FILES_TO_MERGE
-  ${PROJECT_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
-  )
-set_property(GLOBAL APPEND PROPERTY
-  HEX_FILES_TO_MERGE_TARGET
-  ${logical_target_for_zephyr_elf}
-  )

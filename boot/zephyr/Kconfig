@@ -65,7 +65,7 @@ config MCUBOOT_SCRATCH_SIZE
 	default 0x1e000
 
 config MCUBOOT_STORAGE_SIZE
-	hex "Offset of image 1"
+	hex "Size of storage area"
 	default 0x4000
 
 config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
