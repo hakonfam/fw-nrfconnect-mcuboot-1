@@ -70,6 +70,7 @@ get_filename_component(MCUBOOT_DIR ${BOOT_DIR} DIRECTORY)
 set(TINYCRYPT_DIR "${MCUBOOT_DIR}/ext/tinycrypt/lib")
 # Path to mbed-tls' asn1 parser library.
 set(MBEDTLS_ASN1_DIR "${MCUBOOT_DIR}/ext/mbedtls")
+set(BL_CRYPTO_DIR "${MCUBOOT_DIR}/../nrf/subsys/bootloader/bl_crypto")
 
 zephyr_library_include_directories(
   include
@@ -109,27 +110,39 @@ if(CONFIG_BOOT_SIGNATURE_TYPE_ECDSA_P256)
   # When using ECDSA signatures, pull in our copy of the tinycrypt library.
   zephyr_library_include_directories(
 	 ${BOOT_DIR}/zephyr/include
-	   ${TINYCRYPT_DIR}/include
 	${MBEDTLS_ASN1_DIR}/include
-	)
+  )
+if(CONFIG_BOOT_USE_TINYCRYPT) 
+  zephyr_library_include_directories(
+	   ${TINYCRYPT_DIR}/include
+  )
+ endif()
 
+if(CONFIG_BOOT_USE_BL_CRYPTO)
+  zephyr_include_directories(
+	  ${BL_CRYPTO_DIR}/../include
+  )
+endif()
+
+  zephyr_library_sources_ifdef(CONFIG_BOOT_USE_TINYCRYPT
+  	${TINYCRYPT_DIR}/source/ecc.c
+  	${TINYCRYPT_DIR}/source/ecc_dsa.c
+  	${TINYCRYPT_DIR}/source/sha256.c
+  	${TINYCRYPT_DIR}/source/utils.c
+  )
   zephyr_library_sources(
-	${TINYCRYPT_DIR}/source/ecc.c
-	${TINYCRYPT_DIR}/source/ecc_dsa.c
-	${TINYCRYPT_DIR}/source/sha256.c
-	${TINYCRYPT_DIR}/source/utils.c
-
 	# Additionally pull in just the ASN.1 parser from mbedTLS.
 	${MBEDTLS_ASN1_DIR}/src/asn1parse.c
 	${MBEDTLS_ASN1_DIR}/src/platform_util.c
-	)
+  )
 
   # Since here we are not using Zephyr's mbedTLS but rather our own, we need
   # to set MBEDTLS_CONFIG_FILE ourselves. When using Zephyr's copy, this
   # variable is set by its Kconfig in the Zephyr codebase.
   zephyr_library_compile_definitions(
 	MBEDTLS_CONFIG_FILE="${CMAKE_CURRENT_LIST_DIR}/include/mcuboot-mbedtls-cfg.h"
-	)
+  )
+  zephyr_include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 elseif(CONFIG_BOOT_SIGNATURE_TYPE_RSA)
   # Use mbedTLS provided by Zephyr for RSA signatures. (Its config file
   # is set using Kconfig.)
