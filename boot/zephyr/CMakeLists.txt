@@ -53,6 +53,7 @@ macro(app_set_runner_args)
   if(CONFIG_ZEPHYR_TRY_MASS_ERASE)
     board_runner_args(dfu-util "--dfuse-modifiers=force:mass-erase")
     board_runner_args(pyocd "--flashtool-opt=-ce")
+    board_runner_args(nrfjprog "--erase")
   endif()
 endmacro()
 
@@ -195,3 +196,13 @@ if (NOT CONFIG_SECURE_BOOT)
     ${logical_target_for_zephyr_elf}
     )
 endif()
+
+# TODO: Configurable?
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE
+  ${PROJECT_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
+  )
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE_TARGET
+  ${logical_target_for_zephyr_elf}
+  )
