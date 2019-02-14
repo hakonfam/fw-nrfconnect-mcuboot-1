@@ -60,6 +60,34 @@ config BOOT_USE_ECDSA
 
 menu "MCUBoot settings"
 
+config MCUBOOT_SCRATCH_SIZE
+	hex "Scratch area size"
+	default 0x1e000
+
+config MCUBOOT_STORAGE_SIZE
+	hex "Offset of image 1"
+	default 0x4000
+
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT
+	hex "Flash space reserved for bootloader."
+	default 0xc000
+	help
+	  Flash space set aside for the MCUBoot. Note, the name
+	  of this configuration needs to match the requirements set by the
+	  script 'partition_manager.py'. See pm.yaml.
+
+
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT_SCRATCH
+	hex "Flash space reserved for scratch."
+	default 0x1e000
+	help
+	  Flash space set aside for the scratch area.
+
+config PARTITION_MANAGER_RESERVED_SPACE_MCUBOOT_STORAGE
+	hex "Flash space reserved for scratch."
+	default 0x4000
+	help
+	  Flash space set aside for the scratch area.
 choice
 	prompt "Signature type"
 	default BOOT_SIGNATURE_TYPE_RSA
@@ -91,14 +119,6 @@ config BOOT_USE_MCUBOOT_SHARED_CRYPTO
 endchoice
 
 endif
-
-config BOOT_SIGNATURE_KEY_FILE
-	string "PEM key file"
-	default ""
-	help
-	  The key file will be parsed by imgtool's getpub command and a .c source
-	  with the public key information will be written in a format expected by
-	  MCUboot.
 
 config MBEDTLS_CFG_FILE
 	default "mcuboot-mbedtls-cfg.h"

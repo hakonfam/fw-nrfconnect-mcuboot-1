@@ -174,6 +174,14 @@ if(NOT CONFIG_BOOT_SIGNATURE_KEY_FILE STREQUAL "")
   else()
     set(KEY_FILE ${MCUBOOT_DIR}/${CONFIG_BOOT_SIGNATURE_KEY_FILE})
   endif()
+
+  set_property(
+	GLOBAL
+	PROPERTY
+	KEY_FILE
+	${KEY_FILE}
+	)
+
   set(GENERATED_PUBKEY ${ZEPHYR_BINARY_DIR}/autogen-pubkey.c)
   add_custom_command(
     OUTPUT ${GENERATED_PUBKEY}
@@ -188,3 +196,26 @@ if(NOT CONFIG_BOOT_SIGNATURE_KEY_FILE STREQUAL "")
     )
   zephyr_library_sources(${GENERATED_PUBKEY})
 endif()
+# TODO: Configurable?
+if (NOT CONFIG_SECURE_BOOT)
+  # If CONFIG_SECURE_BOOT is set, this hex file will be signed
+  # and added to the merge list somewhere else.
+  set_property(GLOBAL APPEND PROPERTY
+    HEX_FILES_TO_MERGE
+    ${PROJECT_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
+    )
+  set_property(GLOBAL APPEND PROPERTY
+    HEX_FILES_TO_MERGE_TARGET
+    ${logical_target_for_zephyr_elf}
+    )
+endif()
+
+# TODO: Configurable?
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE
+  ${PROJECT_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}
+  )
+set_property(GLOBAL APPEND PROPERTY
+  HEX_FILES_TO_MERGE_TARGET
+  ${logical_target_for_zephyr_elf}
+  )
