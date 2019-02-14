@@ -34,8 +34,8 @@ extern const unsigned char rsa_pub_key[];
 extern unsigned int rsa_pub_key_len;
 #elif defined(MCUBOOT_SIGN_EC256)
 #define HAVE_KEYS
-const unsigned char ecdsa_pub_key[1000];
-unsigned int ecdsa_pub_key_len;
+extern const unsigned char ecdsa_pub_key[];
+extern unsigned int ecdsa_pub_key_len;
 #else
 #error "No public key available for given signing algorithm."
 #endif

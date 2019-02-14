@@ -25,7 +25,6 @@ config TEXT_SECTION_OFFSET
 
 endif # BOARD_HAS_NRF5_BOOTLOADER
 
-
 config BOOT_USE_MBEDTLS
 	bool
 	# Hidden option
