@@ -51,6 +51,7 @@ config BOOT_USE_BL_CRYPTO
 	# Zephyr one must not be enabled or the MBEDTLS_CONFIG_FILE macros
 	# will collide.
 	depends on ! MBEDTLS
+
 	help
 	  Use BL for crypto primitives.
 
@@ -116,6 +117,12 @@ config BOOT_USE_MCUBOOT_TC
 config BOOT_USE_MCUBOOT_SHARED_CRYPTO
 	bool "Shared Crypto"
 	select BOOT_USE_BL_CRYPTO
+	imply MULTI_IMAGE_SHARED_SRAM
+	help
+	  This enables MCUBoot to use the crypto API from B0
+	  SHARED_SRAM is needed if Oberon is used for ecdsa
+	  due to a variable 'inv_a' is put on to the stack.
+
 endchoice
 
 endif
