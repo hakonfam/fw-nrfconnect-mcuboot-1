@@ -1,6 +1,6 @@
 mcuboot:
   placement:
-    before: [spu_setup, app]
+    before: [secure_partition, app]
 mcuboot_scratch:
   placement:
     after: [app]
