@@ -4,6 +4,23 @@ config MCUBOOT_CMAKELISTS_DIR
 	string "Path to the directory of the MCUBoot CMakeLists.txt file"
 	default "$MCUBOOT_BASE/boot/zephyr/"
 
+
+config MCUBOOT_USE_HEX_FILE
+	# Mandatory option when being built through 'zephyr_add_executable'
+	bool "Use hex file instead of building MCUBoot"
+
+if MCUBOOT_USE_HEX_FILE
+
+config MCUBOOT_HEX_FILE
+	# Mandatory option when being built through 'zephyr_add_executable'
+	string "MCUBoot hex file"
+
+endif # MCUBOOT_USE_HEX_FILE
+
+config MCUBOOT_SKIP_BUILD
+	# Mandatory option when being built through 'zephyr_add_executable'
+	bool "Skip building MCUBoot"
+
 endif # BOOTLOADER_MCUBOOT
 
 if MCUBOOT || BOOTLOADER_MCUBOOT
