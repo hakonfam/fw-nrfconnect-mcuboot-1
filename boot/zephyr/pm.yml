@@ -1,0 +1,12 @@
+mcuboot:
+  placement:
+    before: [spm, app]
+mcuboot_partitions:
+  inside: app
+  sub_partitions: [primary, secondary]
+mcuboot_scratch:
+  placement:
+    after: [app]
+mcuboot_storage:
+  placement:
+    after: [mcuboot_scratch]
