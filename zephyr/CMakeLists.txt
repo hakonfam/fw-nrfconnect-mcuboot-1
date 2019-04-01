@@ -19,10 +19,11 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${MCUBOOT_BASE}/scripts/imgtool.py
       sign
       --key ${MCUBOOT_BASE}/${CONFIG_BOOT_SIGNATURE_KEY_FILE}
-      --header-size ${CONFIG_TEXT_SECTION_OFFSET}
+      --header-size 0x200 # TODO use PM vaules once located in cmake
       --align       ${DT_FLASH_WRITE_BLOCK_SIZE}
       --version 0.1       # TODO: Configurable?
-      --slot-size 0x32000 # TODO: Configurable?
+      --slot-size 0x32000 # TODO use PM vaules once located in cmake
+      --pad-header
       ${KERNEL_HEX_NAME}  # TODO: Enforce that this will be present through Kconfig
       ${SIGNED_IMAGE}
       )
