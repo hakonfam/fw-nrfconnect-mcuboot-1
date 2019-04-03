@@ -2,7 +2,7 @@ mcuboot:
   placement:
     before: [spm, app]
 mcuboot_partitions:
-  inside: app
+  inside: [spm, app]
   sub_partitions: [primary, secondary]
 mcuboot_scratch:
   placement:

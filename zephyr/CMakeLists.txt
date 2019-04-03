@@ -10,10 +10,19 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
     # TODO: Assert that the bootloader and image use the same key.
 
+    get_property(mcuboot_sign_merged GLOBAL PROPERTY MCUBOOT_SIGN_MERGED)
+    if (mcuboot_sign_merged)
+      message("HALLELUJA")
+      set(mcuboot_sign_depends MERGED_TO_SIGN_TARGET)
+      set(to_sign ${CMAKE_BINARY_DIR}/${mcuboot_sign_merged})
+    else()
+      set(to_sign ${KERNEL_HEX_NAME})
+    endif()
+
     set(SIGNED_IMAGE signed.hex)
 
-    set_property(GLOBAL APPEND PROPERTY
-      extra_post_build_commands
+    add_custom_command(
+      OUTPUT ${SIGNED_IMAGE}
       COMMAND
       ${PYTHON_EXECUTABLE}
       ${MCUBOOT_BASE}/scripts/imgtool.py
@@ -22,18 +31,28 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       --header-size ${CONFIG_TEXT_SECTION_OFFSET}
       --align       ${DT_FLASH_WRITE_BLOCK_SIZE}
       --version 0.1       # TODO: Configurable?
-      --slot-size 0x32000 # TODO: Configurable?
-      ${KERNEL_HEX_NAME}  # TODO: Enforce that this will be present through Kconfig
+      --slot-size 0x69000 # TODO: Configurable?
+      ${to_sign}
       ${SIGNED_IMAGE}
+      WORKING_DIRECTORY
+      ${CMAKE_BINARY_DIR}
+      DEPENDS
+      ${mcuboot_sign_depends}
       )
+
+    print(ZEPHYR_BINARY_DIR)
+    print(CMAKE_BINARY_DIR)
+    print(PROJECT_BINARY_DIR)
+    add_custom_target(signed_image_target DEPENDS ${SIGNED_IMAGE})
+    print(SIGNED_IMAGE)
 
     set_property(GLOBAL APPEND PROPERTY
       HEX_FILES_TO_MERGE
-      ${SIGNED_IMAGE}
+      ${CMAKE_BINARY_DIR}/${SIGNED_IMAGE}
       )
     set_property(GLOBAL APPEND PROPERTY
       HEX_FILES_TO_MERGE_TARGET
-      ${logical_target_for_zephyr_elf}
+      signed_image_target
       )
   endif() # ${require_build}
 endif()
