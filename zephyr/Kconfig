@@ -26,10 +26,28 @@ endif # MCUBOOT_USE_HEX_FILE
 config MCUBOOT_BUILD_STRATEGY_SKIP_BUILD
 	# Mandatory option when being built through 'zephyr_add_executable'
 	bool "Skip building MCUBoot"
+        help
+          When skipping building a hex file, it is required to configure
+          the skipped hex files' start address and size.
+
+if MCUBOOT_BUILD_STRATEGY_SKIP_BUILD
+
+config MCUBOOT_BUILD_STRATEGY_SKIP_ADDRESS
+        hex "Start address of skipped hex file"
+
+config MCUBOOT_BUILD_STRATEGY_SKIP_SIZE
+        hex "Size of skipped hex file"
+
+endif  # MCUBOOT_BUILD_STRATEGY_SKIP_BUILD
 
 config MCUBOOT_BUILD_STRATEGY_FROM_SOURCE
 	# Mandatory option when being built through 'zephyr_add_executable'
 	bool "Build from source"
+
+if !MCUBOOT_BUILD_STRATEGY_FROM_SOURCE
+config MCUBOOT_BUILD_STRATEGY_PLACEMENT
+        string "pm.yml style configuration of placement"
+endif
 
 endchoice
 
