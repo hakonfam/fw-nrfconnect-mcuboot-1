@@ -15,11 +15,11 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     set(SIGNED_IMAGE ${CMAKE_BINARY_DIR}/signed.hex)
 
     set(merged_hex_file
-      $<TARGET_PROPERTY:gen_expr,MCUBOOT_TO_SIGN>)
+      $<TARGET_PROPERTY:partition_manager,MCUBOOT_TO_SIGN>)
     set(merged_hex_file_depends
-      $<TARGET_PROPERTY:gen_expr,MCUBOOT_TO_SIGN_DEPENDS>)
+      $<TARGET_PROPERTY:partition_manager,MCUBOOT_TO_SIGN_DEPENDS>)
     set(sign_merged
-      $<BOOL:$<TARGET_PROPERTY:gen_expr,MCUBOOT_TO_SIGN>>)
+      $<BOOL:$<TARGET_PROPERTY:partition_manager,MCUBOOT_TO_SIGN>>)
     set(to_sign
       $<IF:${sign_merged},${merged_hex_file},${CMAKE_BINARY_DIR}/zephyr/${KERNEL_HEX_NAME}>)
     set(sign_depends
@@ -33,10 +33,10 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${MCUBOOT_BASE}/scripts/imgtool.py
       sign
       --key ${MCUBOOT_BASE}/${CONFIG_BOOT_SIGNATURE_KEY_FILE}
-      --header-size $<TARGET_PROPERTY:gen_expr,MCUBOOT_HEADER_SIZE>
+      --header-size $<TARGET_PROPERTY:partition_manager,MCUBOOT_HEADER_SIZE>
       --align       ${DT_FLASH_WRITE_BLOCK_SIZE}
       --version 0.1       # TODO: Configurable?
-      --slot-size $<TARGET_PROPERTY:gen_expr,MCUBOOT_SLOT_SIZE>
+      --slot-size $<TARGET_PROPERTY:partition_manager,MCUBOOT_SLOT_SIZE>
       --pad-header
       ${to_sign}
       ${SIGNED_IMAGE}
