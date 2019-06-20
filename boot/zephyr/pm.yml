@@ -3,7 +3,7 @@
 mcuboot:
   size: CONFIG_PM_PARTITION_SIZE_MCUBOOT
   placement:
-    before: [mcuboot_primary]
+    after: [b0, start]
 
 mcuboot_primary_app:
   # All images to be placed in MCUboot's slot 0 should be placed in this
@@ -35,4 +35,4 @@ mcuboot_pad:
     # If 'spm' partition is not present, it must be placed before the 'app'.
   size: CONFIG_PM_PARTITION_SIZE_MCUBOOT_PAD
   placement:
-    before: [mcuboot_primary_app]
+    after: [s1, mcuboot]
