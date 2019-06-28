@@ -19,7 +19,7 @@ partition-size=0xc000
 source "${ZEPHYR_BASE}/../nrf/subsys/partition_manager/Kconfig.template.partition_size"
 
 partition=MCUBOOT_SCRATCH
-partition-size=0x1e000
+partition-size=0x1f000
 source "${ZEPHYR_BASE}/../nrf/subsys/partition_manager/Kconfig.template.partition_size"
 
 partition=MCUBOOT_STORAGE
