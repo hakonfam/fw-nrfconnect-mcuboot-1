@@ -86,4 +86,34 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     mcuboot_primary_app_PM_TARGET
     mcuboot_sign_target
     )
+
+  if (CONFIG_MCUBOOT_BUILD_S1_VARIANT)
+    set(signed_s1_hex ${PROJECT_BINARY_DIR}/signed_by_mcuboot_and_b0_s1.hex)
+
+    get_property(s1_mcuboot_PM_TARGET GLOBAL PROPERTY s1_mcuboot_PM_TARGET)
+    get_property(s1_mcuboot_PM_HEX_FILE GLOBAL PROPERTY s1_mcuboot_PM_HEX_FILE)
+
+    add_custom_command(
+      OUTPUT
+      ${signed_s1_hex}
+      COMMAND
+      # Create signed hex for primary slot.
+      ${sign_cmd}
+      ${s1_mcuboot_PM_HEX_FILE}
+      ${signed_s1_hex}
+      DEPENDS
+      ${s1_mcuboot_PM_TARGET}
+      ${s1_mcuboot_PM_HEX_FILE}
+      )
+
+    add_custom_target(signed_s1_target DEPENDS ${signed_s1_hex})
+    set_property(GLOBAL PROPERTY
+      s1_PM_HEX_FILE
+      ${signed_s1_hex}
+      )
+    set_property(GLOBAL PROPERTY
+      s1_PM_TARGET
+      signed_s1_target
+      )
+  endif()
 endif()
