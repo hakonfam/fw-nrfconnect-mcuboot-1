@@ -105,4 +105,54 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     mcuboot_primary_app_PM_TARGET
     mcuboot_sign_target
     )
+
+  if (CONFIG_MCUBOOT_BUILD_S1_VARIANT)
+    # Secure Boot (B0) is enabled, and we have to build update candidates
+    # for both S1 and S0.
+
+    foreach(slot s0_image;s1_image)
+      string(SUBSTRING ${slot} 0 2 slot_only) # 's0_image' -> 's0'
+
+      # Fetch the target and hex file for the current slot.
+      # Note that these hex files are already signed by B0.
+      get_property(${slot}_target GLOBAL PROPERTY ${slot}_PM_TARGET)
+      get_property(${slot}_hex GLOBAL PROPERTY ${slot}_PM_HEX_FILE)
+
+      # The gap from S0/S1 partition is calculated by partition manager
+      # and stored in its target.
+      set(slot_offset
+        $<TARGET_PROPERTY:partition_manager,${slot_only}_TO_SECONDARY>)
+
+      # Depend on both the target for the hex file, and the hex file itself.
+      set(dependencies "${${slot}_target};${${slot}_hex}")
+
+      set(out_path ${PROJECT_BINARY_DIR}/signed_by_mcuboot_and_b0_${slot})
+
+      sign(${${slot}_hex} # Hex file to sign
+        ${out_path}
+        ${slot_offset}
+        "${dependencies}"    # Need "..." to make it a list.
+        b_one_signed_hex     # Created file variable
+        )
+
+      # We now have to override the S0/S1 partition, so use `slot_only`
+      # variable, which is "s0" and "s1" respectively. This to get partition
+      # manager to override the implicitly assigned container hex files.
+
+      # Wrapper target for the generated hex file.
+      add_custom_target(signed_${slot_only}_target DEPENDS ${b_one_signed_hex})
+
+      # Override the container hex file.
+      set_property(GLOBAL PROPERTY
+        ${slot_only}_PM_HEX_FILE
+        ${b_one_signed_hex}
+        )
+
+      # Override the container hex file target.
+      set_property(GLOBAL PROPERTY
+        ${slot_only}_PM_TARGET
+        signed_${slot_only}_target
+        )
+    endforeach()
+  endif()
 endif()
