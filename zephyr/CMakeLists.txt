@@ -1,13 +1,13 @@
 if(CONFIG_BOOTLOADER_MCUBOOT)
-  set(test_update_hex ${PROJECT_BINARY_DIR}/test_update.hex)
-  function(sign to_sign_hex output_prefix offset sign_depends signed_hex_out)
+  function(sign to_sign_hex output_prefix offset load_addr sign_depends signed_hex_out)
     set(op ${output_prefix})
     set(signed_hex ${op}_signed.hex)
     set(${signed_hex_out} ${signed_hex} PARENT_SCOPE)
     set(to_sign_bin ${op}_to_sign.bin)
     set(update_hex ${op}_update.hex)
     set(update_bin ${op}_update.bin)
-    set(moved_update_hex ${op}_moved_update.hex)
+    set(moved_update_hex ${op}_moved_test_update.hex)
+    set(test_update_hex ${op}_test_update.hex)
 
     add_custom_command(
       OUTPUT
@@ -16,6 +16,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${update_bin}
       COMMAND
       ${sign_cmd}
+      --load-addr ${load_addr}
       ${to_sign_hex}
       ${signed_hex}
       COMMAND
@@ -26,15 +27,18 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       ${to_sign_bin}
       COMMAND
       ${sign_cmd}
+      --load-addr ${load_addr}
       ${to_sign_bin}
       ${update_bin}
       COMMAND
       ${sign_cmd}
       --pad # Note: Adds IMAGE_MAGIC to end of slot.
-    ${to_sign_hex}
-    ${test_update_hex}
-    COMMAND
-    ${sign_cmd}
+      --load-addr ${load_addr}
+      ${to_sign_hex}
+      ${test_update_hex}
+      COMMAND
+      ${sign_cmd}
+      --load-addr ${load_addr}
       ${to_sign_hex}
       ${update_hex}
       COMMAND
@@ -42,7 +46,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       --input-target=ihex
       --output-target=ihex
       --change-address ${offset}
-      ${update_hex}
+      ${test_update_hex}
       ${moved_update_hex}
       DEPENDS
       ${sign_depends}
@@ -91,6 +95,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
   sign(${app_to_sign_hex}     # Hex to sign
     ${PROJECT_BINARY_DIR}/app # Prefix for generated files
     ${app_offset}             # Offset
+    $<TARGET_PROPERTY:partition_manager,PM_APP_ADDRESS>
     ${app_sign_depends}       # Dependencies
     app_signed_hex            # Generated hex output variable
     )
@@ -111,7 +116,8 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     # for both S1 and S0.
 
     foreach(slot s0_image;s1_image)
-      string(SUBSTRING ${slot} 0 2 slot_only) # 's0_image' -> 's0'
+      string(SUBSTRING ${slot} 0 2 slot_only)      # 's0_image' -> 's0'
+      string(TOUPPER ${slot_only} slot_only_upper) # 's0' -> 'S0'
 
       # Fetch the target and hex file for the current slot.
       # Note that these hex files are already signed by B0.
@@ -131,6 +137,7 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
       sign(${${slot}_hex} # Hex file to sign
         ${out_path}
         ${slot_offset}
+        $<TARGET_PROPERTY:partition_manager,PM_${slot_only_upper}_ADDRESS>
         "${dependencies}"    # Need "..." to make it a list.
         b_one_signed_hex     # Created file variable
         )
@@ -154,5 +161,6 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
         signed_${slot_only}_target
         )
     endforeach()
+
   endif()
 endif()

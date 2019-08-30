@@ -5,10 +5,33 @@
 
 #if USE_PARTITION_MANAGER
 #include <pm_config.h>
+#include <mcuboot_config/mcuboot_config.h>
 
+#if (MCUBOOT_IMAGE_NUMBER == 1)
 #define FLASH_AREA_IMAGE_PRIMARY    PM_MCUBOOT_PRIMARY_ID
 #define FLASH_AREA_IMAGE_SECONDARY  PM_MCUBOOT_SECONDARY_ID
 #define FLASH_AREA_IMAGE_SCRATCH    PM_MCUBOOT_SCRATCH_ID
+#elif (MCUBOOT_IMAGE_NUMBER == 2)
+
+extern uint32_t _image_1_primary_slot_id[];
+
+extern uint8_t current_image;
+#define FLASH_AREA_IMAGE_PRIMARY               \
+        ((current_image == 0) ?                \
+           PM_MCUBOOT_PRIMARY_ID :             \
+         (current_image == 1) ?                \
+          (uint32_t)_image_1_primary_slot_id : \
+           255 )
+
+#define FLASH_AREA_IMAGE_SECONDARY   \
+        ((current_image == 0) ?      \
+            PM_MCUBOOT_SECONDARY_ID: \
+        (current_image == 1) ?       \
+           PM_MCUBOOT_SECONDARY_ID:  \
+           255 )
+
+#define FLASH_AREA_IMAGE_SCRATCH    PM_MCUBOOT_SCRATCH_ID
+#endif
 
 #else
 

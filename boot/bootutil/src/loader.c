@@ -408,9 +408,9 @@ boot_slots_compatible(void)
         }
     }
 
-    if ((i != num_sectors_primary) ||
-        (j != num_sectors_secondary) ||
-        (primary_slot_sz != secondary_slot_sz)) {
+    if ((i < num_sectors_primary) ||
+        (j > num_sectors_secondary) ||
+        (primary_slot_sz > secondary_slot_sz)) {
         BOOT_LOG_WRN("Cannot upgrade: slots are not compatible");
         return 0;
     }
@@ -782,7 +782,7 @@ boot_validate_slot(int slot, struct boot_status *bs)
              * continue booting from the primary slot.
              */
         }
-        BOOT_LOG_ERR("Image in the %s slot is not valid!",
+        BOOT_LOG_ERR("Image %d in the %s slot is not valid!", current_image,
                      (slot == BOOT_PRIMARY_SLOT) ? "primary" : "secondary");
         rc = -1;
         goto out;
@@ -808,7 +808,13 @@ static int
 boot_validated_swap_type(struct boot_status *bs)
 {
     int swap_type;
+    uint32_t pla = boot_img_hdr(&boot_data, BOOT_PRIMARY_SLOT)->ih_load_addr;
+    uint32_t sla = boot_img_hdr(&boot_data, BOOT_SECONDARY_SLOT)->ih_load_addr;
 
+    if (boot_img_hdr(&boot_data, BOOT_SECONDARY_SLOT)->ih_load_addr !=
+        boot_img_hdr(&boot_data, BOOT_PRIMARY_SLOT)->ih_load_addr) {
+            return BOOT_SWAP_TYPE_NONE;
+    }
     swap_type = boot_swap_type();
     switch (swap_type) {
     case BOOT_SWAP_TYPE_TEST:
@@ -2250,11 +2256,13 @@ boot_go(struct boot_rsp *rsp)
         }
 
 #ifdef MCUBOOT_VALIDATE_PRIMARY_SLOT
-        rc = boot_validate_slot(BOOT_PRIMARY_SLOT, NULL);
-        if (rc != 0) {
-            rc = BOOT_EBADIMAGE;
-            goto out;
-        }
+	if (current_image == 0) {
+		rc = boot_validate_slot(BOOT_PRIMARY_SLOT, NULL);
+		if (rc != 0) {
+			rc = BOOT_EBADIMAGE;
+			goto out;
+		}
+	}
 #else
         /* Even if we're not re-validating the primary slot, we could be booting
          * onto an empty flash chip. At least do a basic sanity check that

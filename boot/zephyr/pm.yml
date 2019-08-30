@@ -1,7 +1,7 @@
 #include <autoconf.h>
 
 mcuboot:
-  size: CONFIG_PM_PARTITION_SIZE_MCUBOOT
+  size: 0xbe00
   placement:
     before: [mcuboot_primary]
 
@@ -20,7 +20,7 @@ mcuboot_secondary:
       [mcuboot_primary]
 
 mcuboot_scratch:
-  size: CONFIG_PM_PARTITION_SIZE_MCUBOOT_SCRATCH
+  size: 0x1f000
   placement:
     after: [app]
 
