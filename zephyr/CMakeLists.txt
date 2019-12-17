@@ -124,12 +124,13 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
   add_custom_target(mcuboot_sign_target DEPENDS ${app_signed_hex})
 
+  get_domain(${BOARD} domain)
   set_property(GLOBAL PROPERTY
-    mcuboot_primary_app_PM_HEX_FILE
+    PM_${domain}_mcuboot_HEX_FILE
     ${app_signed_hex}
     )
   set_property(GLOBAL PROPERTY
-    mcuboot_primary_app_PM_TARGET
+    PM_${domain}_mcuboot_TARGET
     mcuboot_sign_target
     )
 
@@ -144,8 +145,8 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
       # Fetch the target and hex file for the current slot.
       # Note that these hex files are already signed by B0.
-      get_property(${slot}_target GLOBAL PROPERTY ${slot}_PM_TARGET)
-      get_property(${slot}_hex GLOBAL PROPERTY ${slot}_PM_HEX_FILE)
+      get_property(${slot}_target GLOBAL PROPERTY PM_${domain}_${slot}_TARGET)
+      get_property(${slot}_hex GLOBAL PROPERTY PM_${domain}_${slot}_HEX_FILE)
 
       # The gap from S0/S1 partition is calculated by partition manager
       # and stored in its target.
@@ -173,13 +174,13 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
       # Override the container hex file.
       set_property(GLOBAL PROPERTY
-        ${parent_slot}_PM_HEX_FILE
+        PM_${domain}_${parent_slot}_HEX_FILE
         ${signed_hex}
         )
 
       # Override the container hex file target.
       set_property(GLOBAL PROPERTY
-        ${parent_slot}_PM_TARGET
+        PM_${domain}_${parent_slot}_TARGET
         signed_${parent_slot}_target
         )
     endforeach()
