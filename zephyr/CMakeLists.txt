@@ -85,10 +85,15 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
   add_child_image(mcuboot ${MCUBOOT_BASE}/boot/zephyr)
 
+  get_domain(${BOARD} domain)
+
+  get_property(app_binary_dir GLOBAL PROPERTY ${domain}_${IMAGE}PROJECT_BINARY_DIR)
   set(merged_hex_file
-    ${PROJECT_BINARY_DIR}/mcuboot_primary_app.hex)
+    ${app_binary_dir}/${domain}_mcuboot_primary_app.hex)
+
+  # This target is created in partition_manager.cmake
   set(merged_hex_file_depends
-    mcuboot_primary_app_hex$<SEMICOLON>${PROJECT_BINARY_DIR}/mcuboot_primary_app.hex)
+    ${domain}_mcuboot_primary_app_hex$<SEMICOLON>${PROJECT_BINARY_DIR}/${domain}_mcuboot_primary_app.hex)
   set(sign_merged
     $<TARGET_EXISTS:partition_manager>)
   set(app_to_sign_hex
@@ -101,17 +106,17 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
     ${MCUBOOT_BASE}/scripts/imgtool.py
     sign
     --key ${MCUBOOT_BASE}/${CONFIG_BOOT_SIGNATURE_KEY_FILE}
-    --header-size $<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PAD_SIZE>
+    --header-size $<TARGET_PROPERTY:partition_manager,PM_${domain}_MCUBOOT_PAD_SIZE>
     --align       ${CONFIG_DT_FLASH_WRITE_BLOCK_SIZE}
     --version     ${CONFIG_MCUBOOT_IMAGE_VERSION}
-    --slot-size   $<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PRIMARY_SIZE>
+    --slot-size   $<TARGET_PROPERTY:partition_manager,PM_${domain}_MCUBOOT_PRIMARY_SIZE>
     --pad-header
     )
 
-  set(app_offset $<TARGET_PROPERTY:partition_manager,PM_MCUBOOT_PRIMARY_SIZE>)
+  set(app_offset $<TARGET_PROPERTY:partition_manager,PM_${domain}_MCUBOOT_PRIMARY_SIZE>)
 
   sign(${app_to_sign_hex}     # Hex to sign
-    ${PROJECT_BINARY_DIR}/app # Prefix for generated files
+    ${PROJECT_BINARY_DIR}/${domain}_app # Prefix for generated files
     ${app_offset}             # Offset
     ${app_sign_depends}       # Dependencies
     app_signed_hex            # Generated hex output variable
@@ -120,11 +125,11 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
   add_custom_target(mcuboot_sign_target DEPENDS ${app_signed_hex})
 
   set_property(GLOBAL PROPERTY
-    mcuboot_primary_app_PM_HEX_FILE
+    PM_${domain}_mcuboot_primary_app_HEX_FILE
     ${app_signed_hex}
     )
   set_property(GLOBAL PROPERTY
-    mcuboot_primary_app_PM_TARGET
+    PM_${domain}_mcuboot_primary_app_TARGET
     mcuboot_sign_target
     )
 
@@ -139,8 +144,8 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
       # Fetch the target and hex file for the current slot.
       # Note that these hex files are already signed by B0.
-      get_property(${slot}_target GLOBAL PROPERTY ${slot}_PM_TARGET)
-      get_property(${slot}_hex GLOBAL PROPERTY ${slot}_PM_HEX_FILE)
+      get_property(${slot}_target GLOBAL PROPERTY PM_${domain}_${slot}_TARGET)
+      get_property(${slot}_hex GLOBAL PROPERTY PM_${domain}_${slot}_HEX_FILE)
 
       # The gap from S0/S1 partition is calculated by partition manager
       # and stored in its target.
@@ -168,13 +173,13 @@ if(CONFIG_BOOTLOADER_MCUBOOT)
 
       # Override the container hex file.
       set_property(GLOBAL PROPERTY
-        ${parent_slot}_PM_HEX_FILE
+        PM_${domain}_${parent_slot}_HEX_FILE
         ${signed_hex}
         )
 
       # Override the container hex file target.
       set_property(GLOBAL PROPERTY
-        ${parent_slot}_PM_TARGET
+        PM_${domain}_${parent_slot}_TARGET
         signed_${parent_slot}_target
         )
     endforeach()
