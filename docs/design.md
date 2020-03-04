@@ -606,7 +606,7 @@ process is presented below.
 The boot loader swaps the contents of the two image slots for two reasons:
 
   * User has issued a "set pending" operation; the image in the secondary slot
-    should be run once (state II) or repeatedly (state III), depending on
+    should be run once (state I) or repeatedly (state II), depending on
     whether a permanent swap was specified.
   * Test image rebooted without being confirmed; the boot loader should
     revert to the original image currently in the secondary slot (state IV).
