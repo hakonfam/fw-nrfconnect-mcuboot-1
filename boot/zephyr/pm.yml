@@ -38,9 +38,3 @@ mcuboot_pad:
 #ifdef CONFIG_FPROTECT
     align: {start: CONFIG_FPROTECT_BLOCK_SIZE}
 #endif
-
-# Create aliases to be compatible with Zephyr partition naming
-image_0:
-  span: mcuboot_primary
-image_1:
-  span: mcuboot_secondary
