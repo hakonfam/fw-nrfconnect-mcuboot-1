@@ -82,11 +82,9 @@ zephyr_library_sources(
   keys.c
 )
 
-zephyr_library_include_directories(
-	.
-)
 
-zephyr_library_sources(
+zephyr_library_sources_ifdef(
+  CONFIG_SOC_NRF5340_CPUAPP
   nrf53_cpunet_ctl.c
 )
 
