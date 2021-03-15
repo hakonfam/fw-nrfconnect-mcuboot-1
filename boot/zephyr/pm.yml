@@ -17,10 +17,16 @@ mcuboot_primary:
 # slot configuration.
 #if !defined(CONFIG_SINGLE_APPLICATION_SLOT)
 mcuboot_secondary:
+#ifdef CONFIG_PM_MCUBOOT_SECONDARY_IN_EXTERNAL_FLASH
+  region: external_flash
+  size: CONFIG_PM_MCUBOOT_EXTERNAL_SECONDARY_PARTITION_SIZE
+#else
   share_size: [mcuboot_primary]
   placement:
     align: {start: CONFIG_FPROTECT_BLOCK_SIZE}
     after: mcuboot_primary
+#endif /* CONFIG_PM_MCUBOOT_SECONDARY_IN_EXTERNAL_FLASH */
+
 #endif
 
 #if !defined(CONFIG_BOOT_SWAP_USING_MOVE) && !defined(CONFIG_SINGLE_APPLICATION_SLOT)

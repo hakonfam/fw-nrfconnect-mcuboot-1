@@ -260,7 +260,8 @@ boot_initialize_area(struct boot_loader_state *state, int flash_area)
 
     rc = flash_area_get_sectors(flash_area, &num_sectors, out_sectors);
     if (rc != 0) {
-        return rc;
+	    BOOT_LOG_WRN("flash_area-get_sectors failed: %d", rc);
+	    return rc;
     }
     *out_num_sectors = num_sectors;
     return 0;
@@ -283,11 +284,13 @@ boot_read_sectors(struct boot_loader_state *state)
 
     rc = boot_initialize_area(state, FLASH_AREA_IMAGE_PRIMARY(image_index));
     if (rc != 0) {
-        return BOOT_EFLASH;
+	    BOOT_LOG_WRN("boot_initialize_area  PRIMARY failed: %d", rc);
+	    return BOOT_EFLASH;
     }
 
     rc = boot_initialize_area(state, FLASH_AREA_IMAGE_SECONDARY(image_index));
     if (rc != 0) {
+	    BOOT_LOG_WRN("boot_initialize_area  SECONDYR failed: %d", rc);
         return BOOT_EFLASH;
     }
 
